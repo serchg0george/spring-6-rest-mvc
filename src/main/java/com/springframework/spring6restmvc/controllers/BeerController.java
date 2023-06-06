@@ -19,7 +19,7 @@ import java.util.UUID;
 public class BeerController {
     private final BeerService beerService;
 
-//    @RequestMapping(method = RequestMethod.POST)
+    //    @RequestMapping(method = RequestMethod.POST)
     @PostMapping
     public ResponseEntity handlePost(@RequestBody Beer beer) {
         Beer savedBeer = beerService.saveNewBeer(beer);
