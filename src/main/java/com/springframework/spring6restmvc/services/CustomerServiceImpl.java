@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
 
-
 @Slf4j
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -56,5 +55,20 @@ public class CustomerServiceImpl implements CustomerService {
         log.debug("Get Customer By Id in service was called");
 
         return customerMap.get(id);
+    }
+
+    @Override
+    public Customer saveNewCustomer(Customer customer) {
+
+        Customer savedCustomer = Customer.builder()
+                .id(UUID.randomUUID())
+                .customerName(customer.getCustomerName())
+                .createdDate(LocalDateTime.now())
+                .lastModifiedDate(LocalDateTime.now())
+                .build();
+
+        customerMap.put(savedCustomer.getId(), savedCustomer);
+
+        return savedCustomer;
     }
 }
