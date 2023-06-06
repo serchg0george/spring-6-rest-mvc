@@ -20,6 +20,12 @@ import java.util.UUID;
 public class CustomerController {
     private final CustomerService customerService;
 
+    @PatchMapping("{customerId}")
+    public ResponseEntity updateCustomerPatchById(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer) {
+        customerService.patchCustomerById(customerId, customer);
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
 
     @DeleteMapping("{customerId}")
     public ResponseEntity deleteById(@PathVariable("customerId") UUID customerId) {
@@ -30,14 +36,14 @@ public class CustomerController {
     }
 
     @PutMapping("{customerId}")
-    public ResponseEntity updateById(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer){
+    public ResponseEntity updateById(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer) {
         customerService.updateCustomerById(customerId, customer);
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping
-    public ResponseEntity handlePost(@RequestBody Customer customer){
+    public ResponseEntity handlePost(@RequestBody Customer customer) {
         Customer savedCustomer = customerService.saveNewCustomer(customer);
 
         HttpHeaders headers = new HttpHeaders();
