@@ -1,4 +1,4 @@
-package com.springframework.spring6restmvc.controller;
+package com.springframework.spring6restmvc.controllers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

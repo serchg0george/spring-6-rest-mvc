@@ -1,4 +1,4 @@
-package com.springframework.spring6restmvc.model;
+package com.springframework.spring6restmvc.models;
 
 import lombok.Builder;
 import lombok.Data;
