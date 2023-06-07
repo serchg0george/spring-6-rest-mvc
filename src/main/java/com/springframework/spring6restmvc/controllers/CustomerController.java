@@ -62,6 +62,6 @@ public class CustomerController {
 
         log.debug("Get customer by id - in controller");
 
-        return customerService.getCustomerById(customerId);
+        return customerService.getCustomerById(customerId).orElseThrow(NotFoundException::new);
     }
 }
