@@ -1,6 +1,7 @@
 package com.springframework.spring6restmvc.controllers;
 
 import com.springframework.spring6restmvc.entities.Beer;
+import com.springframework.spring6restmvc.mappers.BeerMapper;
 import com.springframework.spring6restmvc.models.BeerDTO;
 import com.springframework.spring6restmvc.repositories.BeerRepository;
 import jakarta.transaction.Transactional;
@@ -24,6 +25,33 @@ class BeerControllerIntegrationTest {
 
     @Autowired
     BeerRepository beerRepository;
+
+    @Autowired
+    BeerMapper beerMapper;
+
+    @Test
+    void testUpdateNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            beerController.updateById(UUID.randomUUID(), BeerDTO.builder().build());
+        });
+    }
+
+    @Test
+    void testUpdateBeerById() {
+        Beer beer = beerRepository.findAll().get(0);
+        BeerDTO beerDTO = beerMapper.beerToBeerDto(beer);
+
+        beerDTO.setId(null);
+        beerDTO.setVersion(null);
+        final String beerName = "UPDATED";
+        beerDTO.setBeerName(beerName);
+
+        ResponseEntity responseEntity = beerController.updateById(beer.getId(), beerDTO);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+
+        Beer updatedBeer = beerRepository.findById(beer.getId()).get();
+        assertThat(updatedBeer.getBeerName()).isEqualTo(beerName);
+    }
 
     @Rollback
     @Transactional
