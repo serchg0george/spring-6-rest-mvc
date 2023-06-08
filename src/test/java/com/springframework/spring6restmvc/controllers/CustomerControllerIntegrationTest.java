@@ -31,6 +31,32 @@ class CustomerControllerIntegrationTest {
     CustomerMapper customerMapper;
 
     @Test
+    void testPatchNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            customerController.updateCustomerPatchById(UUID.randomUUID(), CustomerDTO.builder().build());
+        });
+    }
+
+    @Rollback
+    @Transactional
+    @Test
+    void testPatchCustomer() {
+        Customer customer = customerRepository.findAll().get(0);
+        CustomerDTO customerDTO = customerMapper.customerToCustomerDto(customer);
+
+        customerDTO.setId(customer.getId());
+        customerDTO.setVersion(customer.getVersion());
+        final String customerName = "First customer UPDATED";
+        customerDTO.setCustomerName(customerName);
+
+        ResponseEntity responseEntity = customerController.updateCustomerPatchById(customer.getId(), customerDTO);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+
+        Customer patchCustomer = customerRepository.findById(customer.getId()).get();
+        assertThat(patchCustomer.getCustomerName()).isEqualTo(customerName);
+    }
+
+    @Test
     void testDeleteNotFound() {
         assertThrows(NotFoundException.class, () -> {
             customerController.deleteById(UUID.randomUUID());
