@@ -24,7 +24,21 @@ class CustomerControllerIntegrationTest {
     @Autowired
     CustomerRepository customerRepository;
 
+    @Test
+    void testCustomerIdNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            customerController.getCustomerById(UUID.randomUUID());
+        });
+    }
 
+    @Test
+    void testGetCustomerById() {
+        Customer customer = customerRepository.findAll().get(0);
+
+        CustomerDTO customerDTO = customerController.getCustomerById(customer.getId());
+
+        assertThat(customerDTO).isNotNull();
+    }
 
     @Test
     void testListCustomers() {
