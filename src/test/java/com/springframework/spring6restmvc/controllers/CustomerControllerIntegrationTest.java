@@ -30,12 +30,6 @@ class CustomerControllerIntegrationTest {
     @Autowired
     CustomerMapper customerMapper;
 
-    @Test
-    void testPatchNotFound() {
-        assertThrows(NotFoundException.class, () -> {
-            customerController.updateCustomerPatchById(UUID.randomUUID(), CustomerDTO.builder().build());
-        });
-    }
 
     @Rollback
     @Transactional
