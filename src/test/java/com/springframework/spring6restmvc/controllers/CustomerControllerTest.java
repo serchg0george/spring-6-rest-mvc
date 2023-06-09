@@ -51,6 +51,7 @@ class CustomerControllerTest {
         customerServiceImpl = new CustomerServiceImpl();
     }
 
+
     @Test
     void testPatchCustomer() throws Exception {
         CustomerDTO customer = customerServiceImpl.listCustomers().get(0);
@@ -60,19 +61,20 @@ class CustomerControllerTest {
 
         mockMvc.perform(patch(CustomerController.CUSTOMER_PATH_ID, customer.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(customerMap)))
                 .andExpect(status().isNoContent());
 
         verify(customerService).patchCustomerById(uuidArgumentCaptor.capture(), customerArgumentCaptor.capture());
 
-        assertThat(customer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
-        assertThat(customerMap.get("customerName")).isEqualTo(customerArgumentCaptor.getValue().getCustomerName());
+        assertThat(uuidArgumentCaptor.getValue()).isEqualTo(customer.getId());
+        assertThat(customerArgumentCaptor.getValue().getCustomerName()).isEqualTo(customerMap.get("customerName"));
     }
 
     @Test
     void testDeleteCustomer() throws Exception {
         CustomerDTO customer = customerServiceImpl.listCustomers().get(0);
+
+        given(customerService.deleteById(any())).willReturn(true);
 
         mockMvc.perform(delete(CustomerController.CUSTOMER_PATH_ID, customer.getId())
                         .accept(MediaType.APPLICATION_JSON))
@@ -87,13 +89,17 @@ class CustomerControllerTest {
     void testUpdateCustomer() throws Exception {
         CustomerDTO customer = customerServiceImpl.listCustomers().get(0);
 
+        given(customerService.updateCustomerById(any(), any())).willReturn(Optional.of(CustomerDTO.builder().build()));
+
         mockMvc.perform(put(CustomerController.CUSTOMER_PATH_ID, customer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(customer)))
                 .andExpect(status().isNoContent());
 
-        verify(customerService).updateCustomerById(any(UUID.class), any(CustomerDTO.class));
+        verify(customerService).updateCustomerById(uuidArgumentCaptor.capture(), any(CustomerDTO.class));
+
+        assertThat(customer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
     }
 
     @Test
