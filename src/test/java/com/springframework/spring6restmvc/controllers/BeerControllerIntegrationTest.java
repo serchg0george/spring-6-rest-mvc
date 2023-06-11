@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.spring6restmvc.entities.Beer;
 import com.springframework.spring6restmvc.mappers.BeerMapper;
 import com.springframework.spring6restmvc.models.BeerDTO;
+import com.springframework.spring6restmvc.models.BeerStyle;
 import com.springframework.spring6restmvc.repositories.BeerRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,6 +55,22 @@ class BeerControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    }
+
+    @Test
+    void testListBeersByStyle() throws Exception {
+        mockMvc.perform(get(BeerController.BEER_PATH)
+                        .queryParam("beerStyle", BeerStyle.ALE.name()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(400)));
+    }
+
+    @Test
+    void testListBeersByName() throws Exception {
+        mockMvc.perform(get(BeerController.BEER_PATH)
+                        .queryParam("beerName", "IPA"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(336)));
     }
 
     @Test
@@ -175,7 +193,7 @@ class BeerControllerIntegrationTest {
 
     @Test
     void testListBeers() {
-        List<BeerDTO> dtos = beerController.listBeers();
+        List<BeerDTO> dtos = beerController.listBeers(null, null);
 
         assertThat(dtos.size()).isEqualTo(2413);
     }
@@ -185,7 +203,7 @@ class BeerControllerIntegrationTest {
     @Test
     void testEmptyList() {
         beerRepository.deleteAll();
-        List<BeerDTO> dtos = beerController.listBeers();
+        List<BeerDTO> dtos = beerController.listBeers(null, null);
 
         assertThat(dtos.size()).isEqualTo(0);
     }
