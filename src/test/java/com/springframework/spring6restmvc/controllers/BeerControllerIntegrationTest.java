@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -67,8 +68,8 @@ class BeerControllerIntegrationTest {
                         .queryParam("pageNumber", "2")
                         .queryParam("pageSize", "50"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(50)))
-                .andExpect(jsonPath("$.[0].quantityOnHand").value(IsNull.notNullValue()));
+                .andExpect(jsonPath("$.size()", is(11)))
+                .andExpect(jsonPath("$.content.[0].quantityOnHand").value(IsNull.notNullValue()));
     }
 
     @Test
@@ -78,8 +79,8 @@ class BeerControllerIntegrationTest {
                         .queryParam("beerStyle", BeerStyle.ALE.name())
                         .queryParam("showInventory", "TRUE"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(251)))
-                .andExpect(jsonPath("$.[0].quantityOnHand").value(IsNull.notNullValue()));
+                .andExpect(jsonPath("$.size()", is(11)))
+                .andExpect(jsonPath("$.content.[0].quantityOnHand").value(IsNull.notNullValue()));
     }
 
 //    @Test
@@ -99,7 +100,7 @@ class BeerControllerIntegrationTest {
                         .queryParam("beerName", "ALE")
                         .queryParam("beerStyle", BeerStyle.ALE.name()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(251)));
+                .andExpect(jsonPath("$.size()", is(11)));
     }
 
     @Test
@@ -107,7 +108,7 @@ class BeerControllerIntegrationTest {
         mockMvc.perform(get(BeerController.BEER_PATH)
                         .queryParam("beerStyle", BeerStyle.ALE.name()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(400)));
+                .andExpect(jsonPath("$.size()", is(11)));
     }
 
     @Test
@@ -115,7 +116,7 @@ class BeerControllerIntegrationTest {
         mockMvc.perform(get(BeerController.BEER_PATH)
                         .queryParam("beerName", "IPA"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(336)));
+                .andExpect(jsonPath("$.size()", is(11)));
     }
 
     @Test
@@ -238,9 +239,9 @@ class BeerControllerIntegrationTest {
 
     @Test
     void testListBeers() {
-        List<BeerDTO> dtos = beerController.listBeers(null, null, false, 1, 25);
+        Page<BeerDTO> dtos = beerController.listBeers(null, null, false, 1, 25);
 
-        assertThat(dtos.size()).isEqualTo(2413);
+        assertThat(dtos.getContent().size()).isEqualTo(25);
     }
 
     @Rollback
@@ -248,8 +249,8 @@ class BeerControllerIntegrationTest {
     @Test
     void testEmptyList() {
         beerRepository.deleteAll();
-        List<BeerDTO> dtos = beerController.listBeers(null, null, false, 1, 25);
+        Page<BeerDTO> dtos = beerController.listBeers(null, null, false, 1, 25);
 
-        assertThat(dtos.size()).isEqualTo(0);
+        assertThat(dtos.getContent().size()).isEqualTo(0);
     }
 }
