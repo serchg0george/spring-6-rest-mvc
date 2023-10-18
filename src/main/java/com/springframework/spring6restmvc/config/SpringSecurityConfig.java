@@ -6,18 +6,16 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
-/**
- * Created by jt, Spring Framework Guru.
- */
+
 @Configuration
 public class SpringSecurityConfig {
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests()
-                .anyRequest().authenticated()
-                .and().httpBasic(Customizer.withDefaults())
-                .csrf().ignoringRequestMatchers("/api/**");
+        http.authorizeHttpRequests(authRequest ->
+                        authRequest.anyRequest().authenticated())
+                .oauth2ResourceServer(oAuth ->
+                        oAuth.jwt(Customizer.withDefaults()));
         return http.build();
     }
-
 }
