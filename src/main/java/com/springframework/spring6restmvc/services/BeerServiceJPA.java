@@ -16,7 +16,6 @@ import org.springframework.util.StringUtils;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 @Service
 @Primary
@@ -26,7 +25,7 @@ public class BeerServiceJPA implements BeerService {
     private final BeerMapper beerMapper;
 
     private final static int DEFAULT_PAGE = 0;
-    private final static int DEFAULT_PAGE_SIZE = 1;
+    private final static int DEFAULT_PAGE_SIZE = 25;
 
 
     @Override

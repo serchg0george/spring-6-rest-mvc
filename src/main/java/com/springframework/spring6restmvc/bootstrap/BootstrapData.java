@@ -37,12 +37,12 @@ public class BootstrapData implements CommandLineRunner {
     }
 
     private void loadCsvData() throws FileNotFoundException {
-        if (beerRepository.count() < 10) {
+        if (beerRepository.count() < 10){
             File file = ResourceUtils.getFile("classpath:csvdata/beers.csv");
 
-            List<BeerCSVRecord> records = beerCsvService.convertCSV(file);
+            List<BeerCSVRecord> recs = beerCsvService.convertCSV(file);
 
-            records.forEach(beerCSVRecord -> {
+            recs.forEach(beerCSVRecord -> {
                 BeerStyle beerStyle = switch (beerCSVRecord.getStyle()) {
                     case "American Pale Lager" -> BeerStyle.LAGER;
                     case "American Pale Ale (APA)", "American Black Ale", "Belgian Dark Ale", "American Blonde Ale" ->
@@ -57,13 +57,12 @@ public class BootstrapData implements CommandLineRunner {
                 };
 
                 beerRepository.save(Beer.builder()
-                                .beerName(StringUtils.abbreviate(beerCSVRecord.getBeer(), 50))
-                                .beerStyle(beerStyle)
-                                .price(BigDecimal.TEN)
-                                .upc(beerCSVRecord.getRow().toString())
-                                .quantityOnHand(beerCSVRecord.getCount())
+                        .beerName(StringUtils.abbreviate(beerCSVRecord.getBeer(), 50))
+                        .beerStyle(beerStyle)
+                        .price(BigDecimal.TEN)
+                        .upc(beerCSVRecord.getRow().toString())
+                        .quantityOnHand(beerCSVRecord.getCount())
                         .build());
-
             });
         }
     }
